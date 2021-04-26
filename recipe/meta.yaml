@@ -1,22 +1,33 @@
 {% set name = "shellcheck" %}
 {% set version = "0.7.2" %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  # use the prebuild binaries provided by the project
-  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.darwin.x86_64.tar.xz  # [osx]
-    sha256: 969bd7ef668e8167cfbba569fb9f4a0b2fc1c4021f87032b6a0b0e525fb77369  # [osx]
+  - url: https://github.com/koalaman/{{ name }}/archive/v{{ version }}.tar.gz  # [not linux]
+    sha256: 5911f6133951d0ba6d643025bc50f2afb6c6f66d7225dc3d42e8845bfdf74c3c  # [not linux]
   - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.linux.x86_64.tar.xz  # [linux]
     sha256: 70423609f27b504d6c0c47e340f33652aea975e45f312324f2dbf91c95a3b188  # [linux]
 
 build:
   number: 0
-  skip: True  # [not linux64 and not osx]
+
   missing_dso_whitelist:
     - /usr/lib/libiconv.2.dylib  # [osx]
+
+requirements:
+  build:
+    - stack                     # [not linux]
+    - {{ native }}binutils
+
+  host:
+    - gmp  # [osx]
+
+  run:
+    - gmp  # [osx]
 
 test:
   commands:
@@ -27,7 +38,8 @@ about:
   home: https://github.com/koalaman/shellcheck
   license: GPL-3.0
   license_family: GPL
-  license_file: LICENSE.txt
+  license_file: LICENSE  # [not linux]
+  license_file: LICENSE.txt  # [linux]
   summary: ShellCheck, a static analysis tool for shell scripts
 
 extra:
