@@ -1,22 +1,24 @@
 {% set name = "shellcheck" %}
-{% set version = "0.7.2" %}
+{% set version = "0.11.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  # use the prebuild binaries provided by the project
-  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.darwin.x86_64.tar.xz  # [osx]
-    sha256: 969bd7ef668e8167cfbba569fb9f4a0b2fc1c4021f87032b6a0b0e525fb77369  # [osx]
-  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.linux.x86_64.tar.xz  # [linux]
-    sha256: 70423609f27b504d6c0c47e340f33652aea975e45f312324f2dbf91c95a3b188  # [linux]
+  # Binary repack for OSX and Linux
+  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.darwin.aarch64.tar.xz  # [osx and arm64]
+    sha256: 56affdd8de5527894dca6dc3d7e0a99a873b0f004d7aabc30ae407d3f48b0a79  # [osx and arm64]
+  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.darwin.x86_64.tar.xz  # [osx and x86_64]
+    sha256: 3c89db4edcab7cf1c27bff178882e0f6f27f7afdf54e859fa041fca10febe4c6  # [osx and x86_64]
+  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.linux.x86_64.tar.xz  # [linux64]
+    sha256: 8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198  # [linux64]
+  - url: https://github.com/koalaman/{{ name }}/releases/download/v{{ version }}/{{ name }}-v{{ version }}.linux.aarch64.tar.xz  # [aarch64]
+    sha256: 12b331c1d2db6b9eb13cfca64306b1b157a86eb69db83023e261eaa7e7c14588  # [aarch64]
 
 build:
   number: 0
-  skip: True  # [not linux64 and not osx]
-  missing_dso_whitelist:
-    - /usr/lib/libiconv.2.dylib  # [osx]
+  skip: true  # [win]
 
 test:
   commands:
@@ -29,7 +31,14 @@ about:
   license_family: GPL
   license_file: LICENSE.txt
   summary: ShellCheck, a static analysis tool for shell scripts
+  description: ShellCheck is a GPLv3 tool that gives warnings and suggestions for bash/sh shell scripts
+  dev_url: https://github.com/koalaman/shellcheck
+  doc_url: https://github.com/koalaman/shellcheck/tree/master/doc
+
 
 extra:
   recipe-maintainers:
     - dbast
+  skip-lints:
+    # requires section not needed, because of binary repack
+    - missing_section
